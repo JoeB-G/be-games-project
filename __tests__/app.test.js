@@ -18,6 +18,7 @@ describe("GET /api/categories", () => {
           description: expect.any(String),
         };
         const categoriesArray = response.body.categories;
+        expect(categoriesArray.length).toBe(4)
         categoriesArray.forEach((category) => {
           expect(category).toMatchObject(expectedCategory);
         });
