@@ -26,3 +26,14 @@ describe("GET /api/categories", () => {
             })
     });
 })
+
+describe("404", () => {
+    it('should return 404 status when responding to request to endpoint that does not exist', () => {
+        return request(app)
+            .get("/qwerty")
+            .expect(404)
+            .then((response) => {
+                expect(response.body.message).toBe("not found")
+            })
+    });
+})
