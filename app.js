@@ -3,8 +3,6 @@ const {getCategories} = require("./controllers")
 
 const app = express()
 
-app.use(express.json())
-
 app.get(`/api/categories`, getCategories)
 
 app.use(`/*`, (req, res) => {
