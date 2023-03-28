@@ -200,14 +200,14 @@ describe("PATCH /api/reviews/:review_id", () => {
   it("should return status 201 and respond with the updated review object", () => {
     const votesUpdateObj = { inc_votes: 10 };
     const expectedResponse = {
-      owner: expect.any(String),
-      title: expect.any(String),
-      review_id: expect.any(Number),
+      owner: 'mallionaire',
+      title: 'Agricola',
+      review_id: 1,
       category: expect.any(String),
       review_img_url: expect.any(String),
       created_at: expect.any(String),
-      votes: expect.any(Number),
-      designer: expect.any(String),
+      votes: 11,
+      designer: 'Uwe Rosenberg',
       review_body: expect.any(String),
     };
     return request(app)
