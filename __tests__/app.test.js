@@ -94,6 +94,47 @@ describe("GET /api/reviews", () => {
   });
 });
 
+describe.only("GET /api/reviews/:review_id/comments", () => {
+  it("should return status 200, responds with an array of comment objects sorted in descending date order", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then((response) => {
+        const commentsArray = response.body.comments;
+        const expectedComment = {
+          review_id: expect.any(Number),
+          body: expect.any(String),
+          comment_id: expect.any(Number),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        };
+        expect(commentsArray).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        commentsArray.forEach((comment) => {
+          expect(comment).toMatchObject(expectedComment);
+        });
+      });
+  });
+  it("should return status 404 when reponding to a review_id that does not exist", () => {
+    return request(app)
+      .get("/api/reviews/3000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("review ID not found");
+      });
+  });
+  it("should return status 400 when reponding to invalid review_id", () => {
+    return request(app)
+      .get("/api/reviews/SAUSAGES/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid review ID");
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)
