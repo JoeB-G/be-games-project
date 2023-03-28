@@ -1,4 +1,11 @@
-const { fetchCategories, fetchReview, fetchReviews } = require("./models");
+const { response } = require("./app");
+const {
+  fetchCategories,
+  fetchReview,
+  fetchReviews,
+  fetchComments,
+  checkExists,
+} = require("./models");
 
 exports.getCategories = (req, res) => {
   fetchCategories().then((response) => {
@@ -21,4 +28,18 @@ exports.getReviews = (req, res) => {
   fetchReviews().then((response) => {
     res.status(200).send({ reviews: response });
   });
+};
+
+exports.getComments = (req, res, next) => {
+  const { review_id } = req.params;
+  checkExists("reviews", "review_id", review_id)
+    .then(() => {
+      fetchComments(review_id)
+        .then((comments) => {
+          res.status(200).send({ comments });
+        })
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
