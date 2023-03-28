@@ -65,6 +65,35 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe("GET /api/reviews", () => {
+  it("should return status 200, responds with array of review objects in descending order with comment_count column that counts total comments for each review", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then((response) => {
+        const expectedCategory = {
+          owner: expect.any(String),
+          title: expect.any(String),
+          review_id: expect.any(Number),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          designer: expect.any(String),
+          comment_count: expect.any(String),
+        };
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        expect(reviewsArray.length).toBe(13);
+        reviewsArray.forEach((review) => {
+          expect(review).toMatchObject(expectedCategory);
+        });
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)
