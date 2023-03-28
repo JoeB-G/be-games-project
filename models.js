@@ -68,3 +68,15 @@ exports.addComment = (username, comment, reviewID) => {
       return response.rows[0];
     });
 };
+
+exports.updateReview = (incVotes, reviewID) => {
+  const queryString = `
+    UPDATE reviews
+    SET votes = votes + $1
+    WHERE review_id = $2
+    RETURNING *;
+    `;
+  return db.query(queryString, [incVotes, reviewID]).then((response) => {
+    return response.rows[0];
+  });
+};

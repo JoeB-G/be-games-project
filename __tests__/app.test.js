@@ -60,7 +60,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/sausages")
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe("invalid review ID");
+        expect(response.body.message).toBe("invalid input type");
       });
   });
 });
@@ -130,7 +130,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/SAUSAGES/comments")
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe("invalid review ID");
+        expect(response.body.message).toBe("invalid input type");
       });
   });
 });
@@ -171,7 +171,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(commentObj)
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe("invalid review ID");
+        expect(response.body.message).toBe("invalid input type");
       });
   });
   it("should return status 400 when passed object missing required keys", () => {
@@ -181,7 +181,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(commentObj)
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe("post object missing required keys");
+        expect(response.body.message).toBe("object missing required keys");
       });
   });
   it("should return status 400 when passed object with invalid values", () => {
@@ -191,9 +191,71 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(commentObj)
       .expect(400)
       .then((response) => {
-        expect(response.body.message).toBe(
-          "post object contains invalid values"
-        );
+        expect(response.body.message).toBe("object contains invalid values");
+      });
+  });
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+  it("should return status 201 and respond with the updated review object", () => {
+    const votesUpdateObj = { inc_votes: 10 };
+    const expectedResponse = {
+      owner: expect.any(String),
+      title: expect.any(String),
+      review_id: expect.any(Number),
+      category: expect.any(String),
+      review_img_url: expect.any(String),
+      created_at: expect.any(String),
+      votes: expect.any(Number),
+      designer: expect.any(String),
+      review_body: expect.any(String),
+    };
+    return request(app)
+      .patch("/api/reviews/1/")
+      .send(votesUpdateObj)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.review).toEqual(expectedResponse);
+      });
+  });
+  it("should return status 404 when responding to review_id that does not exist", () => {
+    const votesUpdateObj = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/reviews/9999")
+      .send(votesUpdateObj)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("review ID not found");
+      });
+  });
+  it("should return status 400 when responding to invalid review_id", () => {
+    const votesUpdateObj = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/reviews/CHEESE")
+      .send(votesUpdateObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 400 when passed object missing required keys", () => {
+    const votesUpdateObj = { inc_vootes: 10 };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(votesUpdateObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object missing required keys");
+      });
+  });
+  it("should return status 400 when passed object with invalid values", () => {
+    const votesUpdateObj = { inc_votes: "sausages" };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(votesUpdateObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
       });
   });
 });

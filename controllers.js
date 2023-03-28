@@ -6,6 +6,7 @@ const {
   fetchComments,
   checkExists,
   addComment,
+  updateReview,
 } = require("./models");
 
 exports.getCategories = (req, res) => {
@@ -56,6 +57,24 @@ exports.postComment = (req, res, next) => {
   Promise.all(postPromises)
     .then((responses) => {
       res.status(201).send({ comment: responses[1] });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchReview = (req, res, next) => {
+  const { review_id } = req.params;
+  const { inc_votes } = req.body;
+
+  const patchPromises = [
+    checkExists("reviews", "review_id", review_id),
+    updateReview(inc_votes, review_id),
+  ];
+
+  Promise.all(patchPromises)
+    .then((responses) => {
+      res.status(201).send({ review: responses[1] });
     })
     .catch((err) => {
       next(err);
