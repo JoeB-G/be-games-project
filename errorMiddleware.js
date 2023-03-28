@@ -1,10 +1,10 @@
 exports.handlePsqlErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
-    res.status(400).send({ message: "invalid review ID" });
+    res.status(400).send({ message: "invalid input type" });
   } else if (err.code === "23502") {
-    res.status(400).send({ message: "post object missing required keys" });
+    res.status(400).send({ message: "object missing required keys" });
   } else if (err.code === "23503") {
-    res.status(400).send({ message: "post object contains invalid values" });
+    res.status(400).send({ message: "object contains invalid values" });
   } else next(err);
 };
 
