@@ -94,7 +94,7 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   it("should return status 200, responds with an array of comment objects sorted in descending date order", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -110,8 +110,8 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
           votes: expect.any(Number),
         };
         expect(commentsArray).toBeSortedBy("created_at", {
-            descending: true,
-          });
+          descending: true,
+        });
         commentsArray.forEach((comment) => {
           expect(comment).toMatchObject(expectedComment);
         });
@@ -131,6 +131,69 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).toBe("invalid review ID");
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  it("should return status 201 and respond with the posted comment object", () => {
+    const commentObj = { username: "mallionaire", body: "blahdeblad" };
+    const expectedResponse = {
+      comment_id: expect.any(Number),
+      body: "blahdeblad",
+      review_id: 1,
+      author: "mallionaire",
+      votes: expect.any(Number),
+      created_at: expect.any(String),
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(commentObj)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toEqual(expectedResponse);
+      });
+  });
+  it("should return status 404 when responding to review_id that does not exist", () => {
+    const commentObj = { username: "mallionaire", body: "blahdeblad" };
+    return request(app)
+      .post("/api/reviews/99999/comments")
+      .send(commentObj)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("review ID not found");
+      });
+  });
+  it("should return status 400 when responding to invalid review_id", () => {
+    const commentObj = { username: "mallionaire", body: "blahdeblad" };
+    return request(app)
+      .post("/api/reviews/BEANS/comments")
+      .send(commentObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid review ID");
+      });
+  });
+  it("should return status 400 when passed object missing required keys", () => {
+    const commentObj = { user: "mallionaire", body: "blahdeblad" };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(commentObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("post object missing required keys");
+      });
+  });
+  it("should return status 400 when passed object with invalid values", () => {
+    const commentObj = { username: "trallionaire", body: "blahdeblad" };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(commentObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "post object contains invalid values"
+        );
       });
   });
 });

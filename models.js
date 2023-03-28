@@ -53,3 +53,18 @@ exports.checkExists = (table, column, value) => {
     }
   });
 };
+
+exports.addComment = (username, comment, reviewID) => {
+  const queryString = `
+    INSERT INTO comments
+    (author, body, review_id)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *;
+    `;
+  return db
+    .query(queryString, [username, comment, +reviewID])
+    .then((response) => {
+      return response.rows[0];
+    });
+};
