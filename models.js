@@ -17,3 +17,19 @@ exports.fetchReview = (reviewID, next) => {
     return response.rows;
   });
 };
+
+exports.fetchReviews = () => {
+  return db
+    .query(
+      `
+    SELECT reviews.review_id, title, designer, owner, review_img_url, category, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count
+FROM reviews
+LEFT JOIN comments ON reviews.review_id = comments.review_id
+GROUP BY reviews.review_id
+ORDER BY reviews.created_at DESC;
+    `
+    )
+    .then((response) => {
+      return response.rows;
+    });
+};
