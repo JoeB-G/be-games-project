@@ -6,6 +6,7 @@ const {
   getComments,
   postComment,
   patchReview,
+  deleteComment
 } = require("./controllers");
 const {
   handleCustomErrors,
@@ -27,6 +28,8 @@ app.get("/api/reviews/:review_id/comments", getComments);
 app.post("/api/reviews/:review_id/comments", postComment);
 
 app.patch("/api/reviews/:review_id", patchReview);
+
+app.delete("/api/comments/:comment_id", deleteComment)
 
 app.use(handlePsqlErrors);
 
