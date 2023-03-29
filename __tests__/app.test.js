@@ -282,6 +282,28 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+describe("GET /api/users", () => {
+  it("should return status 200, array of users objects ", () => {
+    const expectedUser = {
+      username: expect.any(String),
+      name: expect.any(String),
+      avatar_url: expect.any(String),
+    };
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const usersArray = response.body.users;
+
+        expect(usersArray.length).toBe(4);
+
+        usersArray.forEach((user) => {
+          expect(user).toMatchObject(expectedUser);
+        });
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)

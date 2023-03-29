@@ -94,3 +94,12 @@ exports.removeComment = (commentID) => {
     return response;
   });
 };
+
+exports.fetchUsers = () => {
+    const queryString = `
+    SELECT username, name, avatar_url FROM users;
+    `
+    return db.query(queryString).then((response) => {
+        return response.rows
+    })
+}
