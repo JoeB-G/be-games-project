@@ -200,14 +200,14 @@ describe("PATCH /api/reviews/:review_id", () => {
   it("should return status 201 and respond with the updated review object", () => {
     const votesUpdateObj = { inc_votes: 10 };
     const expectedResponse = {
-      owner: 'mallionaire',
-      title: 'Agricola',
+      owner: "mallionaire",
+      title: "Agricola",
       review_id: 1,
       category: expect.any(String),
       review_img_url: expect.any(String),
       created_at: expect.any(String),
       votes: 11,
-      designer: 'Uwe Rosenberg',
+      designer: "Uwe Rosenberg",
       review_body: expect.any(String),
     };
     return request(app)
@@ -256,6 +256,28 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).toBe("invalid input type");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("should return status 204 when passed valid comment_id", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  it("should return status 400 when passed invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/BANANAS")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 404 when passed comment_id that does not exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("comment_id not found");
       });
   });
 });
