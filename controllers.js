@@ -36,7 +36,7 @@ exports.getReviews = (req, res, next) => {
   if (category) {
     getPromises.push(checkExists("categories", "slug", category));
   }
-  
+
   Promise.all(getPromises)
     .then((response) => {
       res.status(200).send({ reviews: response[0] });
