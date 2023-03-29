@@ -52,7 +52,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/999")
       .expect(404)
       .then((response) => {
-        expect(response.body.message).toBe("review ID not found");
+        expect(response.body.message).toBe("review_id not found");
       });
   });
   it("should return status 400 when reponding to invalid review_id", () => {
@@ -66,7 +66,7 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("GET /api/reviews", () => {
-  it("should return status 200, responds with array of review objects in descending order with comment_count column that counts total comments for each review", () => {
+  it("should return status 200, responds with array of review objects in descending order with comment_count column that counts total comments for each review when passed with no queries", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
@@ -90,6 +90,80 @@ describe("GET /api/reviews", () => {
         reviewsArray.forEach((review) => {
           expect(review).toMatchObject(expectedCategory);
         });
+      });
+  });
+  it("should return status 200, responds with review selected from category query value", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray.length).toBe(11);
+        reviewsArray.forEach(review => {
+            expect(review.category).toBe("social deduction")
+        });
+      });
+  });
+  it("should return status 200, responds with review ordered by query value", () => {
+    return request(app)
+      .get("/api/reviews?order=ASC")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  it("should return status 200, responds with review sorted by query value", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=comment_count")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray).toBeSortedBy("comment_count", {
+          descending: true,
+        });
+      });
+  });
+  it("should return status 200, should handle all query values simultaneously", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes&order=ASC&category=social deduction")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray.length).toBe(11);
+        expect(reviewsArray).toBeSortedBy("votes", { descending: false });
+      });
+  });
+  it("should return status 200, when passed valid category query value with no associated reviews", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.reviews).toEqual([]);
+      });
+  });
+  it("should return status 404, when passed invalid category query value", () => {
+    return request(app)
+      .get("/api/reviews?category=CHEESE")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("categories slug not found");
+      });
+  });
+  it("should return status 400, when passed invalid sort_by query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=BISCUITS")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid sort query");
+      });
+  });
+  it("should return status 400, when passed invalid order query", () => {
+    return request(app)
+      .get("/api/reviews?order=BISCUITS")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid sort order");
       });
   });
 });
@@ -122,7 +196,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/3000/comments")
       .expect(404)
       .then((response) => {
-        expect(response.body.message).toBe("review ID not found");
+        expect(response.body.message).toBe("reviews review_id not found");
       });
   });
   it("should return status 400 when reponding to invalid review_id", () => {
@@ -161,7 +235,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(commentObj)
       .expect(404)
       .then((response) => {
-        expect(response.body.message).toBe("review ID not found");
+        expect(response.body.message).toBe("reviews review_id not found");
       });
   });
   it("should return status 400 when responding to invalid review_id", () => {
@@ -225,7 +299,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(votesUpdateObj)
       .expect(404)
       .then((response) => {
-        expect(response.body.message).toBe("review ID not found");
+        expect(response.body.message).toBe("reviews review_id not found");
       });
   });
   it("should return status 400 when responding to invalid review_id", () => {

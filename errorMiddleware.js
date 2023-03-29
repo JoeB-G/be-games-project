@@ -9,7 +9,7 @@ exports.handlePsqlErrors = (err, req, res, next) => {
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {
-  if (err.status === 404) {
+  if (err.status === 404 || err.status === 400) {
     res.status(err.status).send({ message: err.message });
   } else next(err);
 };
