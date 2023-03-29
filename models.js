@@ -13,7 +13,7 @@ exports.fetchReview = (reviewID, next) => {
 	`;
   return db.query(queryString, [reviewID]).then((response) => {
     if (response.rows.length === 0) {
-      return Promise.reject({ status: 404, message: "review ID not found" });
+      return Promise.reject({ status: 404, message: "review_id not found" });
     }
     return response.rows;
   });
@@ -57,9 +57,6 @@ exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
     ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryString, queryValues).then((response) => {
-    if (response.rows.length === 0) {
-      return Promise.reject({ status: 404, message: "invalid category query" });
-    }
     return response.rows;
   });
 };
@@ -78,7 +75,7 @@ exports.checkExists = (table, column, value) => {
   const queryString = format(`SELECT * FROM %I WHERE %I = $1;`, table, column);
   return db.query(queryString, [value]).then((response) => {
     if (response.rows.length === 0) {
-      return Promise.reject({ status: 404, message: "review ID not found" });
+      return Promise.reject({ status: 404, message: `${table} ${column} not found` });
     }
   });
 };

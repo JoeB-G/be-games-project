@@ -30,9 +30,16 @@ exports.getReview = (req, res, next) => {
 
 exports.getReviews = (req, res, next) => {
   const { sort_by, order, category } = req.query;
-  fetchReviews(sort_by, order, category)
+
+  const getPromises = [fetchReviews(sort_by, order, category)];
+
+  if (category) {
+    getPromises.push(checkExists("categories", "slug", category));
+  }
+  
+  Promise.all(getPromises)
     .then((response) => {
-      res.status(200).send({ reviews: response });
+      res.status(200).send({ reviews: response[0] });
     })
     .catch((err) => {
       next(err);
