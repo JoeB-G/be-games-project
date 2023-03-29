@@ -26,7 +26,7 @@ describe("GET /api/categories", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   it("should return status 200, responds with a review object", () => {
     return request(app)
       .get("/api/reviews/2")
@@ -46,7 +46,7 @@ describe.only("GET /api/reviews/:review_id", () => {
           comment_count: expect.any(String),
         };
         expect(reviewObject).toMatchObject(expectedReview);
-        expect(typeof +reviewObject.comment_count).toBe("number");
+        expect(reviewObject.comment_count).toBe("3");
       });
   });
   it("should return status 404 when reponding to a review_id that does not exist", () => {
