@@ -7,9 +7,15 @@ exports.fetchCategories = () => {
   });
 };
 
-exports.fetchReview = (reviewID, next) => {
+exports.fetchReview = (reviewID) => {
   const queryString = `
-	SELECT * FROM reviews WHERE reviews.review_id = $1;
+	SELECT reviews.* , COUNT(comments.review_id) AS comment_count 
+    FROM 
+    reviews
+    JOIN comments ON reviews.review_id = comments.review_id 
+    WHERE 
+    reviews.review_id = $1
+    GROUP BY reviews.review_id;
 	`;
   return db.query(queryString, [reviewID]).then((response) => {
     if (response.rows.length === 0) {
@@ -75,7 +81,10 @@ exports.checkExists = (table, column, value) => {
   const queryString = format(`SELECT * FROM %I WHERE %I = $1;`, table, column);
   return db.query(queryString, [value]).then((response) => {
     if (response.rows.length === 0) {
-      return Promise.reject({ status: 404, message: `${table} ${column} not found` });
+      return Promise.reject({
+        status: 404,
+        message: `${table} ${column} not found`,
+      });
     }
   });
 };

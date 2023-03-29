@@ -43,8 +43,10 @@ describe("GET /api/reviews/:review_id", () => {
           category: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
+          comment_count: expect.any(String),
         };
         expect(reviewObject).toMatchObject(expectedReview);
+        expect(reviewObject.comment_count).toBe("3");
       });
   });
   it("should return status 404 when reponding to a review_id that does not exist", () => {
@@ -99,8 +101,8 @@ describe("GET /api/reviews", () => {
       .then((response) => {
         const reviewsArray = response.body.reviews;
         expect(reviewsArray.length).toBe(11);
-        reviewsArray.forEach(review => {
-            expect(review.category).toBe("social deduction")
+        reviewsArray.forEach((review) => {
+          expect(review.category).toBe("social deduction");
         });
       });
   });
