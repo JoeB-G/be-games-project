@@ -19,20 +19,49 @@ exports.fetchReview = (reviewID, next) => {
   });
 };
 
-exports.fetchReviews = () => {
-  return db
-    .query(
-      `
+exports.fetchReviews = (sort_by = "created_at", order = "DESC", category) => {
+  let queryString = `
     SELECT reviews.review_id, title, designer, owner, review_img_url, category, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count
-FROM reviews
-LEFT JOIN comments ON reviews.review_id = comments.review_id
-GROUP BY reviews.review_id
-ORDER BY reviews.created_at DESC;
-    `
-    )
-    .then((response) => {
-      return response.rows;
-    });
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    `;
+
+  const queryValues = [];
+
+  if (category) {
+    queryValues.push(category);
+    queryString += `WHERE category = $1 `;
+  }
+
+  if (!["ASC", "DESC"].includes(order)) {
+    return Promise.reject({ status: 400, message: "invalid sort order" });
+  }
+
+  if (
+    ![
+      "review_id",
+      "owner",
+      "title",
+      "category",
+      "review_img_url",
+      "created_at",
+      "votes",
+      "designer",
+      "comment_count",
+    ].includes(sort_by)
+  ) {
+    return Promise.reject({ status: 400, message: "invalid sort query" });
+  }
+
+  queryString += `GROUP BY reviews.review_id
+    ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryString, queryValues).then((response) => {
+    if (response.rows.length === 0) {
+      return Promise.reject({ status: 404, message: "invalid category query" });
+    }
+    return response.rows;
+  });
 };
 
 exports.fetchComments = (reviewID) => {
@@ -96,10 +125,10 @@ exports.removeComment = (commentID) => {
 };
 
 exports.fetchUsers = () => {
-    const queryString = `
+  const queryString = `
     SELECT username, name, avatar_url FROM users;
-    `
-    return db.query(queryString).then((response) => {
-        return response.rows
-    })
-}
+    `;
+  return db.query(queryString).then((response) => {
+    return response.rows;
+  });
+};

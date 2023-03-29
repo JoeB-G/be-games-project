@@ -8,7 +8,7 @@ const {
   addComment,
   updateReview,
   removeComment,
-  fetchUsers
+  fetchUsers,
 } = require("./models");
 
 exports.getCategories = (req, res) => {
@@ -28,10 +28,15 @@ exports.getReview = (req, res, next) => {
     });
 };
 
-exports.getReviews = (req, res) => {
-  fetchReviews().then((response) => {
-    res.status(200).send({ reviews: response });
-  });
+exports.getReviews = (req, res, next) => {
+  const { sort_by, order, category } = req.query;
+  fetchReviews(sort_by, order, category)
+    .then((response) => {
+      res.status(200).send({ reviews: response });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getComments = (req, res, next) => {
@@ -95,7 +100,7 @@ exports.deleteComment = (req, res, next) => {
 };
 
 exports.getUsers = (req, res) => {
-    fetchUsers().then((users) => {
-        res.status(200).send({users})
-    })
-}
+  fetchUsers().then((users) => {
+    res.status(200).send({ users });
+  });
+};
