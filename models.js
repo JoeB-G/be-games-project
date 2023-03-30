@@ -138,3 +138,4 @@ exports.fetchUsers = () => {
     return response.rows;
   });
 };
+

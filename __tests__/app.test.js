@@ -380,6 +380,28 @@ describe("GET /api/users", () => {
   });
 });
 
+describe("GET /api", () => {
+  it("should return status 200, responds with endpoint.json object", () => {
+    const expectedReponse = {
+      "GET /api": expect.any(Object),
+      "GET /api/categories": expect.any(Object),
+      "GET /api/reviews": expect.any(Object),
+      "GET /api/reviews/:review_id": expect.any(Object),
+      "GET /api/reviews/:review_id/comments": expect.any(Object),
+      "POST /api/reviews/:review_id/comments": expect.any(Object),
+      "PATCH /api/reviews/:review_id": expect.any(Object),
+      "DELETE /api/comments/:comment_id": expect.any(Object),
+      "GET /api/users": expect.any(Object),
+    };
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.endpoints).toMatchObject(expectedReponse);
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)

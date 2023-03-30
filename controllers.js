@@ -10,6 +10,7 @@ const {
   removeComment,
   fetchUsers,
 } = require("./models");
+const fs = require("fs/promises");
 
 exports.getCategories = (req, res) => {
   fetchCategories().then((response) => {
@@ -109,5 +110,12 @@ exports.deleteComment = (req, res, next) => {
 exports.getUsers = (req, res) => {
   fetchUsers().then((users) => {
     res.status(200).send({ users });
+  });
+};
+
+exports.getApi = (req, res) => {
+  fs.readFile(`${__dirname}/endpoints.json`, `utf-8`).then((data) => {
+    const endpoints = JSON.parse(data)
+    res.status(200).send({ endpoints });
   });
 };
