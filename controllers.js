@@ -9,8 +9,8 @@ const {
   updateReview,
   removeComment,
   fetchUsers,
-  fetchApi,
 } = require("./models");
+const fs = require("fs/promises");
 
 exports.getCategories = (req, res) => {
   fetchCategories().then((response) => {
@@ -114,7 +114,8 @@ exports.getUsers = (req, res) => {
 };
 
 exports.getApi = (req, res) => {
-  fetchApi().then((response) => {
-    res.status(200).send({ endpoints: response });
+  fs.readFile(`${__dirname}/endpoints.json`, `utf-8`).then((data) => {
+    const endpoints = JSON.parse(data)
+    res.status(200).send({ endpoints });
   });
 };
