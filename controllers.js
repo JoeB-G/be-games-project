@@ -116,16 +116,18 @@ exports.getUsers = (req, res) => {
 
 exports.getApi = (req, res) => {
   fs.readFile(`${__dirname}/endpoints.json`, `utf-8`).then((data) => {
-    const endpoints = JSON.parse(data)
+    const endpoints = JSON.parse(data);
     res.status(200).send({ endpoints });
   });
 };
 
 exports.getUser = (req, res, next) => {
-  const {username} = req.params
-  fetchUser(username).then((user) => {
-    res.status(200).send({user})
-  }).catch((err) => {
-    next(err)
-  })
-}
+  const { username } = req.params;
+  fetchUser(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

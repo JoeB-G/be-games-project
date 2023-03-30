@@ -402,15 +402,20 @@ describe("GET /api", () => {
   });
 });
 
-describe('GET /api/users/:username', () => {
-  it('should return status 200, respond with user object', () => {
-    const expectedUser = {username: "mallionaire", avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg", name: "haz"}
+describe("GET /api/users/:username", () => {
+  it("should return status 200, respond with user object", () => {
+    const expectedUser = {
+      username: "mallionaire",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      name: "haz",
+    };
     return request(app)
       .get("/api/users/mallionaire")
       .expect(200)
       .then((response) => {
-        expect(response.body.user).toEqual(expectedUser)
-      })
+        expect(response.body.user).toEqual(expectedUser);
+      });
   });
   it("should return status 404 when passed username that does not exist", () => {
     return request(app)
@@ -420,7 +425,6 @@ describe('GET /api/users/:username', () => {
         expect(response.body.message).toBe("username not found");
       });
   });
-  
 });
 
 describe("404", () => {
