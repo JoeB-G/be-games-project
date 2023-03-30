@@ -9,6 +9,7 @@ const {
   updateReview,
   removeComment,
   fetchUsers,
+  fetchUser,
 } = require("./models");
 const fs = require("fs/promises");
 
@@ -119,3 +120,12 @@ exports.getApi = (req, res) => {
     res.status(200).send({ endpoints });
   });
 };
+
+exports.getUser = (req, res, next) => {
+  const {username} = req.params
+  fetchUser(username).then((user) => {
+    res.status(200).send({user})
+  }).catch((err) => {
+    next(err)
+  })
+}
