@@ -427,6 +427,62 @@ describe("GET /api/users/:username", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  it("should return status 201, responds with updated comment", () => {
+    const expectedResponse = {
+      comment_id: 1,
+      body: "I loved this game too!",
+      votes: 26,
+      author: "bainesface",
+      review_id: 2,
+      created_at: expect.any(String),
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 10 })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toEqual(expectedResponse);
+      });
+  });
+  it("should return status 404 when passed comment_id that does not exist", () => {
+    return request(app)
+      .patch("/api/comments/9999")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("comment_id not found");
+      });
+  });
+  it("should return status 400 when passed invalid comment_id", () => {
+    return request(app)
+      .patch("/api/comments/BEANS")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 400 when passed object with invalid value", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "ten" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 400 when passed object with invalid key", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_vo: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object missing required keys");
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)

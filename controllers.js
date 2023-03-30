@@ -10,6 +10,7 @@ const {
   removeComment,
   fetchUsers,
   fetchUser,
+  updateComment,
 } = require("./models");
 const fs = require("fs/promises");
 
@@ -126,6 +127,19 @@ exports.getUser = (req, res, next) => {
   fetchUser(username)
     .then((user) => {
       res.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+
+  updateComment(comment_id, inc_votes)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);

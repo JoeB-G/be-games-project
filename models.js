@@ -154,3 +154,18 @@ exports.fetchUser = (username) => {
       return response.rows[0];
     });
 };
+
+exports.updateComment = (commentID, incVotes) => {
+  const queryString = `
+    UPDATE comments
+    SET votes = votes + $2
+    WHERE comment_id = $1
+    RETURNING *;
+    `;
+  return db.query(queryString, [commentID, incVotes]).then((response) => {
+    if (response.rows.length === 0) {
+      return Promise.reject({ status: 404, message: "comment_id not found" });
+    }
+    return response.rows[0];
+  });
+};
