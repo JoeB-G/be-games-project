@@ -1,5 +1,6 @@
 const db = require("./db/connection");
 const format = require("pg-format");
+const fs = require("fs/promises");
 
 exports.fetchCategories = () => {
   return db.query(`SELECT * FROM categories;`).then((result) => {
@@ -136,5 +137,12 @@ exports.fetchUsers = () => {
     `;
   return db.query(queryString).then((response) => {
     return response.rows;
+  });
+};
+
+exports.fetchApi = () => {
+  return fs.readFile(`${__dirname}/endpoints.json`, `utf-8`).then((data) => {
+    const response = JSON.parse(data)
+    return response;
   });
 };

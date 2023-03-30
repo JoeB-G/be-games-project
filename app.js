@@ -8,6 +8,7 @@ const {
   patchReview,
   deleteComment,
   getUsers,
+  getApi,
 } = require("./controllers");
 const {
   handleCustomErrors,
@@ -33,6 +34,8 @@ app.patch("/api/reviews/:review_id", patchReview);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api/users", getUsers);
+
+app.get("/api", getApi);
 
 app.use(handlePsqlErrors);
 

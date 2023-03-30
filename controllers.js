@@ -9,6 +9,7 @@ const {
   updateReview,
   removeComment,
   fetchUsers,
+  fetchApi,
 } = require("./models");
 
 exports.getCategories = (req, res) => {
@@ -109,5 +110,11 @@ exports.deleteComment = (req, res, next) => {
 exports.getUsers = (req, res) => {
   fetchUsers().then((users) => {
     res.status(200).send({ users });
+  });
+};
+
+exports.getApi = (req, res) => {
+  fetchApi().then((response) => {
+    res.status(200).send({ endpoints: response });
   });
 };
