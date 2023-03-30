@@ -132,10 +132,25 @@ exports.removeComment = (commentID) => {
 
 exports.fetchUsers = () => {
   const queryString = `
-    SELECT username, name, avatar_url FROM users;
+    SELECT * FROM users;
     `;
   return db.query(queryString).then((response) => {
     return response.rows;
   });
 };
 
+exports.fetchUser = (username) => {
+  return db
+    .query(
+      `
+  SELECT * FROM users WHERE username = $1;
+  `,
+      [username]
+    )
+    .then((response) => {
+      if (response.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "username not found" });
+      }
+      return response.rows[0];
+    });
+};
