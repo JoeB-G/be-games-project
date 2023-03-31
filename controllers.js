@@ -33,9 +33,9 @@ exports.getReview = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const { sort_by, order, category } = req.query;
+  const { sort_by, order, category, limit, page } = req.query;
 
-  const getPromises = [fetchReviews(sort_by, order, category)];
+  const getPromises = [fetchReviews(sort_by, order, category, limit, page)];
 
   if (category) {
     getPromises.push(checkExists("categories", "slug", category));
