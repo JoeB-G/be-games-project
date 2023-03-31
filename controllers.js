@@ -1,4 +1,3 @@
-const { response } = require("./app");
 const {
   fetchCategories,
   fetchReview,
@@ -51,12 +50,17 @@ exports.getReviews = (req, res, next) => {
 };
 
 exports.getComments = (req, res, next) => {
+  const { limit, page } = req.query;
   const { review_id } = req.params;
-  checkExists("reviews", "review_id", review_id)
-    .then(() => {
-      fetchComments(review_id).then((comments) => {
-        res.status(200).send({ comments });
-      });
+
+  const getPromises = [
+    fetchComments(review_id, limit, page),
+    checkExists("reviews", "review_id", review_id),
+  ];
+
+  Promise.all(getPromises)
+    .then((responses) => {
+      res.status(200).send({ comments: responses[0] });
     })
     .catch((err) => {
       next(err);
