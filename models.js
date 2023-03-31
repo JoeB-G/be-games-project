@@ -169,3 +169,20 @@ exports.updateComment = (commentID, incVotes) => {
     return response.rows[0];
   });
 };
+
+exports.addReview = (reviewToAdd) => {
+  const queryString = `
+  INSERT INTO reviews
+  (owner, title, review_body, designer, category, review_img_url)
+  VALUES
+  ($1, $2, $3, $4, $5, $6)
+  RETURNING reviews.*, (
+  SELECT COUNT(comments.review_id) AS comment_count
+  FROM comments
+  WHERE comments.review_id = reviews.review_id
+  );
+  `;
+  return db.query(queryString, reviewToAdd).then((response) => {
+    return response.rows[0];
+  });
+};
