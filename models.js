@@ -43,7 +43,8 @@ exports.fetchReviews = (
 
   if (category) {
     queryValues.push(category);
-    queryString += ` WHERE category = $2 `;}
+    queryString += ` WHERE category = $2 `;
+  }
 
   if (!["ASC", "DESC"].includes(order)) {
     return Promise.reject({ status: 400, message: "invalid sort order" });
@@ -82,12 +83,19 @@ exports.fetchReviews = (
   });
 };
 
-exports.fetchComments = (reviewID) => {
-  const queryString = `
+exports.fetchComments = (reviewID, limit = 10, page) => {
+  const queryValues = [reviewID, limit];
+  let queryString = `
     SELECT * FROM comments WHERE comments.review_id = $1
-    ORDER BY comments.created_at DESC;
+    ORDER BY comments.created_at DESC
+    LIMIT $2
     `;
-  return db.query(queryString, [reviewID]).then((response) => {
+  if (page) {
+    const offset = (page - 1) * limit;
+    queryValues.push(offset);
+    queryString += ` OFFSET $3`;
+  }
+  return db.query(queryString, queryValues).then((response) => {
     return response.rows;
   });
 };
