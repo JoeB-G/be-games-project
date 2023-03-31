@@ -68,7 +68,7 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("GET /api/reviews", () => {
-  it("should return status 200, responds with array of review objects in descending order with comment_count column that counts total comments for each review when passed with no queries", () => {
+  it("should return status 200, responds with array of default 10 review objects in descending order with comment_count column that counts total comments for each review when passed with no queries", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
@@ -83,26 +83,71 @@ describe("GET /api/reviews", () => {
           votes: expect.any(Number),
           designer: expect.any(String),
           comment_count: expect.any(String),
+          total_count: expect.any(String),
         };
         const reviewsArray = response.body.reviews;
         expect(reviewsArray).toBeSortedBy("created_at", {
           descending: true,
         });
-        expect(reviewsArray.length).toBe(13);
+        expect(reviewsArray.length).toBe(10);
         reviewsArray.forEach((review) => {
           expect(review).toMatchObject(expectedCategory);
         });
       });
   });
-  it("should return status 200, responds with review selected from category query value", () => {
+  it("should return status 200, responds with number of reviews from limit query value", () => {
     return request(app)
-      .get("/api/reviews?category=social deduction")
+      .get("/api/reviews?limit=1")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray.length).toBe(1);
+      });
+  });
+  it("should return status 200, responds with reviews offset by the review limit times by page number e.g. page limit 5, page 2 responds with reviews 6-10", () => {
+    const expectedReview = [
+      {
+        review_id: 4,
+        title: "Dolor reprehenderit",
+        designer: "Gamey McGameface",
+        owner: "mallionaire",
+        review_img_url:
+          "https://images.pexels.com/photos/278918/pexels-photo-278918.jpeg?w=700&h=700",
+        category: "social deduction",
+        created_at: expect.any(String),
+        votes: 7,
+        comment_count: "0",
+        total_count: expect.any(String),
+      },
+    ];
+    return request(app)
+      .get("/api/reviews?category=social deduction&limit=1&page=2")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        expect(reviewsArray).toEqual(expectedReview);
+      });
+  });
+  it("should return status 200, responds with reviews selected from category query value", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&limit=100")
       .expect(200)
       .then((response) => {
         const reviewsArray = response.body.reviews;
         expect(reviewsArray.length).toBe(11);
         reviewsArray.forEach((review) => {
           expect(review.category).toBe("social deduction");
+        });
+      });
+  });
+  it("should return status 200, array of reviews with added total_count property, which is the total number of reviews returned by the query taking into account any filters without the limit applied", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&limit=3")
+      .expect(200)
+      .then((response) => {
+        const reviewsArray = response.body.reviews;
+        reviewsArray.forEach((review) => {
+          expect(review.total_count).toBe("11");
         });
       });
   });
@@ -128,7 +173,9 @@ describe("GET /api/reviews", () => {
   });
   it("should return status 200, should handle all query values simultaneously", () => {
     return request(app)
-      .get("/api/reviews?sort_by=votes&order=ASC&category=social deduction")
+      .get(
+        "/api/reviews?sort_by=votes&order=ASC&category=social deduction&limit=100&page=1"
+      )
       .expect(200)
       .then((response) => {
         const reviewsArray = response.body.reviews;
@@ -166,6 +213,30 @@ describe("GET /api/reviews", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).toBe("invalid sort order");
+      });
+  });
+  it("should return status 400, when passed invalid limit query", () => {
+    return request(app)
+      .get("/api/reviews?limit=BISCUITS")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 400, when passed negative limit query", () => {
+    return request(app)
+      .get("/api/reviews?limit=-44")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("input must be positive");
+      });
+  });
+  it("should return status 400, when passed negative page query", () => {
+    return request(app)
+      .get("/api/reviews?page=-10")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("input must be positive");
       });
   });
 });

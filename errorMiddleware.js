@@ -5,6 +5,8 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(400).send({ message: "object missing required keys" });
   } else if (err.code === "23503") {
     res.status(400).send({ message: "object contains invalid values" });
+  } else if (err.code === "2201W" || err.code === "2201X") {
+    res.status(400).send({ message: "input must be positive" });
   } else next(err);
 };
 
