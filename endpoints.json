@@ -175,5 +175,17 @@
         "comment_count": "0"
       }
     }
+  },
+  "POST /api/categories": {
+    "description": "adds a new category to the categories table, responding with the added category object",
+    "queries": [],
+    "exampleRequest": {
+      "slug": "Stupid games",
+      "description": "silly games for stupid people"
+    },
+    "exampleResponse": {
+      "slug": "Stupid games",
+      "description": "silly games for stupid people"
+    }
   }
 }

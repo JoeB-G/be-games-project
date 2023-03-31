@@ -209,3 +209,19 @@ exports.addReview = (reviewToAdd) => {
     return response.rows[0];
   });
 };
+
+exports.addCategory = (slug, description) => {
+  if (!description) {
+    return Promise.reject({status: 400, message: "object missing required keys"})
+  }
+  const queryString = `
+  INSERT INTO categories
+  (slug, description)
+  VALUES
+  ($1, $2)
+  RETURNING *;
+  `
+  return db.query(queryString, [slug, description]).then((response) => {
+    return response.rows[0]
+  })
+}
