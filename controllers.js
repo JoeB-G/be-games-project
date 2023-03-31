@@ -11,6 +11,7 @@ const {
   fetchUser,
   updateComment,
   addReview,
+  addCategory
 } = require("./models");
 const fs = require("fs/promises");
 
@@ -171,4 +172,14 @@ exports.postReview = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.postCategory = (req, res, next) => {
+  const { slug, description } = req.body;
+  addCategory(slug, description).then((category) => {
+    res.status(201).send({ category });
+  })
+  .catch((err) => {
+    next(err)
+  })
 };

@@ -264,31 +264,33 @@ describe("GET /api/reviews/:review_id/comments", () => {
         });
       });
   });
-  it('should return status 200, respond with array of comment objects up to limit query value', () => {
+  it("should return status 200, respond with array of comment objects up to limit query value", () => {
     return request(app)
       .get("/api/reviews/3/comments?limit=1")
       .expect(200)
       .then((response) => {
-        const commentsArray = response.body.comments
-        expect(commentsArray.length).toBe(1)
-      })
+        const commentsArray = response.body.comments;
+        expect(commentsArray.length).toBe(1);
+      });
   });
-  it('should return status 200, responds with comments array offset by the  limit times by page number e.g. page limit 5, page 2 responds with comments 6-10', () => {
-    const expectedComments = [{
-      comment_id: 2,
-      body: 'My dog loved this game too!',
-      review_id: 3,
-      author: 'mallionaire',
-      votes: 13,
-      created_at: '2021-01-18T10:09:05.410Z'
-    }]
+  it("should return status 200, responds with comments array offset by the  limit times by page number e.g. page limit 5, page 2 responds with comments 6-10", () => {
+    const expectedComments = [
+      {
+        comment_id: 2,
+        body: "My dog loved this game too!",
+        review_id: 3,
+        author: "mallionaire",
+        votes: 13,
+        created_at: "2021-01-18T10:09:05.410Z",
+      },
+    ];
     return request(app)
       .get("/api/reviews/3/comments?limit=1&page=3")
       .expect(200)
       .then((response) => {
-        const commentsArray = response.body.comments
-        expect(commentsArray).toEqual(expectedComments)
-      })
+        const commentsArray = response.body.comments;
+        expect(commentsArray).toEqual(expectedComments);
+      });
   });
   it("should return status 404 when reponding to a review_id that does not exist", () => {
     return request(app)
@@ -680,6 +682,45 @@ describe("POST /api/reviews", () => {
       });
   });
 });
+
+describe("POST /api/categories", () => {
+  it("should return status 201, response with the posted category object", () => {
+    const categoryObject = {
+      slug: "Stupid games",
+      description: "silly games for stupid people",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(categoryObject)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.category).toEqual(categoryObject);
+      });
+  });
+  it("should return status 400 when passed object no slug key/value", () => {
+    const categoryObject = {
+      snail: "Stupid games",
+      description: "silly games for stupid people",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(categoryObject)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object missing required keys");
+      });
+  });
+  it('should return status 400 when passed object no description key', () => {
+    const categoryObject = {slug: "Stupid games", FOOL: "silly games for stupid people"}
+    return request(app)
+    .post("/api/categories")
+    .send(categoryObject)
+    .expect(400)
+    .then((response) => {
+      expect(response.body.message).toBe("object missing required keys")
+    })
+})
+})
 
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
