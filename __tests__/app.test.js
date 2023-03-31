@@ -483,6 +483,75 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
+describe("POST /api/reviews", () => {
+  it("should return status 201, responds with posted review", () => {
+    const reviewToPost = {
+      title: "QWEQWE",
+      designer: "QWEQWEWEWE",
+      owner: "dav3rid",
+      review_img_url:
+        "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+      review_body: "QWEWEWEWE!",
+      category: "euro game",
+    };
+
+    const expectedResponse = {
+      review_id: 14,
+      title: "QWEQWE",
+      category: "euro game",
+      designer: "QWEQWEWEWE",
+      owner: "dav3rid",
+      review_body: "QWEWEWEWE!",
+      review_img_url:
+        "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+      created_at: expect.any(String),
+      votes: 0,
+      comment_count: "0",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(reviewToPost)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.review).toEqual(expectedResponse);
+      });
+  });
+  it("should return status 404 when passed object with owner or category that does not exist", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        title: "QWEQWE",
+        designer: "QWEQWEWEWE",
+        owner: "SAUSAGES",
+        review_img_url:
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        review_body: "QWEWEWEWE!",
+        category: "euro game",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object contains invalid values");
+      });
+  });
+  it("should return status 400 when passed object with invalid key", () => {
+    return request(app)
+      .post("/api/reviews")
+      .send({
+        title: "QWEQWE",
+        designer: "QWEQWEWEWE",
+        sausages: "dav3rid",
+        review_img_url:
+          "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        review_body: "QWEWEWEWE!",
+        category: "euro game",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object missing required keys");
+      });
+  });
+});
+
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {
     return request(app)

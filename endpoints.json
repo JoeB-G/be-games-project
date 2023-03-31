@@ -149,5 +149,31 @@
         "created_at": "2017-11-22T12:43:33.389Z"
       }
     }
+  },
+  "POST /api/reviews": {
+    "description": "adds a new review to the reviews table, responding with the added review with comments count column",
+    "queries": [],
+    "exampleRequest": {
+      "title": "QWEQWE",
+      "designer": "QWEQWEWEWE",
+      "owner": "dav3rid",
+      "review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+      "review_body": "QWEWEWEWE!",
+      "category": "euro game"
+    },
+    "exampleResponse": {
+      "review": {
+        "review_id": 14,
+        "title": "QWEQWE",
+        "category": "euro game",
+        "designer": "QWEQWEWEWE",
+        "owner": "dav3rid",
+        "review_body": "QWEWEWEWE!",
+        "review_img_url": "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+        "created_at": "2023-03-31T03:32:32.289Z",
+        "votes": 0,
+        "comment_count": "0"
+      }
+    }
   }
 }

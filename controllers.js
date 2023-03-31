@@ -11,6 +11,7 @@ const {
   fetchUsers,
   fetchUser,
   updateComment,
+  addReview,
 } = require("./models");
 const fs = require("fs/promises");
 
@@ -140,6 +141,28 @@ exports.patchComment = (req, res, next) => {
   updateComment(comment_id, inc_votes)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postReview = (req, res, next) => {
+  const { owner, title, review_body, designer, category, review_img_url } =
+    req.body;
+
+  const inputArray = [
+    owner,
+    title,
+    review_body,
+    designer,
+    category,
+    review_img_url,
+  ];
+
+  addReview(inputArray)
+    .then((review) => {
+      res.status(201).send({ review });
     })
     .catch((err) => {
       next(err);
