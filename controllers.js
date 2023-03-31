@@ -11,7 +11,8 @@ const {
   fetchUser,
   updateComment,
   addReview,
-  addCategory
+  addCategory,
+  removeReview,
 } = require("./models");
 const fs = require("fs/promises");
 
@@ -176,10 +177,22 @@ exports.postReview = (req, res, next) => {
 
 exports.postCategory = (req, res, next) => {
   const { slug, description } = req.body;
-  addCategory(slug, description).then((category) => {
-    res.status(201).send({ category });
-  })
-  .catch((err) => {
-    next(err)
-  })
+  addCategory(slug, description)
+    .then((category) => {
+      res.status(201).send({ category });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteReview = (req, res, next) => {
+  const { review_id } = req.params;
+  removeReview(review_id)
+    .then((response) => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

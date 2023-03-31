@@ -710,17 +710,42 @@ describe("POST /api/categories", () => {
         expect(response.body.message).toBe("object missing required keys");
       });
   });
-  it('should return status 400 when passed object no description key', () => {
-    const categoryObject = {slug: "Stupid games", FOOL: "silly games for stupid people"}
+  it("should return status 400 when passed object no description key", () => {
+    const categoryObject = {
+      slug: "Stupid games",
+      FOOL: "silly games for stupid people",
+    };
     return request(app)
-    .post("/api/categories")
-    .send(categoryObject)
-    .expect(400)
-    .then((response) => {
-      expect(response.body.message).toBe("object missing required keys")
-    })
-})
-})
+      .post("/api/categories")
+      .send(categoryObject)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("object missing required keys");
+      });
+  });
+});
+
+describe("DELETE /api/reviews/:review_id", () => {
+  it("should return status 204 when passed valid review_id", () => {
+    return request(app).delete("/api/reviews/1").expect(204);
+  });
+  it("should return status 400 when passed invalid review_id", () => {
+    return request(app)
+      .delete("/api/reviews/BANANAS")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid input type");
+      });
+  });
+  it("should return status 404 when passed review_id that does not exist", () => {
+    return request(app)
+      .delete("/api/reviews/9999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("review_id not found");
+      });
+  });
+});
 
 describe("404", () => {
   it("should return 404 status when responding to request to endpoint that does not exist", () => {

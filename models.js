@@ -212,7 +212,10 @@ exports.addReview = (reviewToAdd) => {
 
 exports.addCategory = (slug, description) => {
   if (!description) {
-    return Promise.reject({status: 400, message: "object missing required keys"})
+    return Promise.reject({
+      status: 400,
+      message: "object missing required keys",
+    });
   }
   const queryString = `
   INSERT INTO categories
@@ -220,8 +223,22 @@ exports.addCategory = (slug, description) => {
   VALUES
   ($1, $2)
   RETURNING *;
-  `
+  `;
   return db.query(queryString, [slug, description]).then((response) => {
-    return response.rows[0]
-  })
-}
+    return response.rows[0];
+  });
+};
+
+exports.removeReview = (reviewID) => {
+  const queryString = `
+  DELETE FROM reviews
+  WHERE review_id = $1
+  RETURNING *;
+  `;
+  return db.query(queryString, [reviewID]).then((response) => {
+    if (response.rows.length === 0) {
+      return Promise.reject({ status: 404, message: "review_id not found" });
+    }
+    return response;
+  });
+};
