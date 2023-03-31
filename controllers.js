@@ -180,7 +180,6 @@ exports.postCategory = (req, res, next) => {
     res.status(201).send({ category });
   })
   .catch((err) => {
-    console.log(err)
     next(err)
   })
 };
