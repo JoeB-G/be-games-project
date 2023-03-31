@@ -187,5 +187,10 @@
       "slug": "Stupid games",
       "description": "silly games for stupid people"
     }
+  },
+  "DELETE /api/reviews/:review_id": {
+    "description": "deletes the review with given review_id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
