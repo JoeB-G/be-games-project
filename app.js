@@ -6,6 +6,9 @@ const {
 } = require("./errorMiddleware");
 const app = express();
 const apiRouter = require("./Routes/api-router");
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json());
 
