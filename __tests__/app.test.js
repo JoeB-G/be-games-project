@@ -29,7 +29,7 @@ describe("GET /api/categories", () => {
 describe("GET /api/reviews/:review_id", () => {
   it("should return status 200, responds with a review object", () => {
     return request(app)
-      .get("/api/reviews/2")
+      .get("/api/reviews/11")
       .expect(200)
       .then((response) => {
         const reviewObject = response.body.review[0];
@@ -46,7 +46,7 @@ describe("GET /api/reviews/:review_id", () => {
           comment_count: expect.any(String),
         };
         expect(reviewObject).toMatchObject(expectedReview);
-        expect(reviewObject.comment_count).toBe("3");
+        expect(reviewObject.comment_count).toBe("0");
       });
   });
   it("should return status 404 when reponding to a review_id that does not exist", () => {
